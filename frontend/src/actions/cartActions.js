@@ -6,8 +6,10 @@ import {
   CART_SAVE_PAYMENT_METHOD,
 } from '../constants/cartConstants'
 
+const URL = `https://ecommerce-backends.herokuapp.com`;
+
 export const addToCart = (id, qty) => async (dispatch, getState) => {
-  const { data } = await axios.get(`/api/products/${id}`)
+  const { data } = await axios.get(`${URL}/api/products/${id}`)
 
   dispatch({
     type: CART_ADD_ITEM,

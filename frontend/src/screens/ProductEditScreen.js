@@ -23,6 +23,8 @@ const ProductEditScreen = ({ match, history }) => {
 
   const dispatch = useDispatch()
 
+  const URL = `https://ecommerce-backends.herokuapp.com`;
+
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, error, product } = productDetails
 
@@ -53,26 +55,30 @@ const ProductEditScreen = ({ match, history }) => {
   }, [dispatch, history, productId, product, successUpdate])
 
   const uploadFileHandler = async (e) => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    setUploading(true)
-
+    e.preventDefault()
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        const file = e.target.files[0]
+        console.log(file)
+
+
+        let formData = new FormData()
+        formData.append('file', file)
+
+        const res = await axios.post(`${URL}/api/upload/image` , formData,{
+            headers: {
+              'content-type': 'multipart/form-data'
+            }
+        })
+
+
+        console.log('Uploaded',res)
+        setImage(res.data.url)
+
+      console.log('image',image)
+        
+      } catch (err) {
+        alert(err)
       }
-
-      const { data } = await axios.post('/api/upload', formData, config)
-
-      setImage(data)
-      setUploading(false)
-    } catch (error) {
-      console.error(error)
-      setUploading(false)
-    }
   }
 
   const submitHandler = (e) => {
@@ -128,14 +134,15 @@ const ProductEditScreen = ({ match, history }) => {
 
             <Form.Group controlId='image'>
               <Form.Label>Image</Form.Label>
-              <Form.Control
+{/*               <Form.Control
                 type='text'
                 placeholder='Enter image url'
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
-              ></Form.Control>
+              ></Form.Control> */}
               <Form.File
                 id='image-file'
+                name="file"
                 label='Choose File'
                 custom
                 onChange={uploadFileHandler}
